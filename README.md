@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SatQuery AI — Vision-Language Assistant for Remote Sensing
 
 **Problem Statement ID:** SIH26167  
@@ -30,3 +31,6 @@ pip install -r requirements.txt
 python -m uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 Then navigate to `http://localhost:8000` in your web browser.
+=======
+# SatQuery-AI
+>>>>>>> 741dc2b3cb35fa6749248e1f8330cc6b0f33fc86
