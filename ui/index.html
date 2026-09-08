@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SatQuery AI — Remote Sensing Vision-Language Intelligence</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Full-Screen Interactive Space Canvas & Auth Overlay -->
+  <div id="loginPage" class="login-page">
+    <canvas id="heroSpaceCanvas" class="hero-canvas"></canvas>
+    <div class="video-overlay"></div>
+
+    <!-- Login / Sign Up Card -->
+    <div id="loginContainer" class="login-container">
+      <div class="login-logo-icon">📡</div>
+      <h1>SatQuery AI</h1>
+      <p>AI-powered satellite image intelligence</p>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button type="button" id="tabLoginBtn" class="auth-tab active">Login</button>
+        <button type="button" id="tabSignupBtn" class="auth-tab">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Analyst Email" value="analyst@satquery.ai" required>
+        <input type="password" id="loginPassword" placeholder="Password" value="••••••••" required>
+        <button type="submit" id="loginSubmitBtn">Access Analyst Suite →</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signupForm" class="hidden">
+        <input type="text" id="signupName" placeholder="Full Name / Organization" required>
+        <input type="email" id="signupEmail" placeholder="Work Email" required>
+        <input type="password" id="signupPassword" placeholder="Create Password" required>
+        <button type="submit" id="signupSubmitBtn">Create Analyst Account →</button>
+      </form>
+      
+      <div style="margin-top: 16px; display: flex; justify-content: center; gap: 10px;">
+        <button type="button" id="quickDemoBtn" class="btn-quick-demo">⚡ Quick Demo Access</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">📡</div>
+      <div>
+        <h1 class="brand-title">SatQuery AI</h1>
+        <p class="brand-subtitle">Remote Sensing Vision-Language Assistant</p>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button type="button" id="openChatbotBtn" class="logout-btn" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(99, 102, 241, 0.25)); border-color: rgba(56, 189, 248, 0.5); color: #38bdf8; font-weight: 700;" title="Open SatQuery AI Domain Specialist Assistant Chatbot">
+        <img src="/assets/chatbot-avatar.png" alt="SatQuery AI Bot Avatar" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+        <span>AI Domain Chat</span>
+      </button>
+      <button type="button" id="navInputBtn" class="logout-btn" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600;">📁 Upload Imagery</button>
+      <button type="button" id="navResultsBtn" class="logout-btn" style="border-color: rgba(34, 197, 94, 0.4); color: #4ade80; font-weight: 600;">📊 Analysis Results</button>
+      <button id="logoutBtn" class="logout-btn" title="Lock Analyst Session">🔒 Logout</button>
+    </div>
+  </header>
+
+  <!-- Top Dashboard Container: 4 Main Feature Cards -->
+  <div class="dashboard-header-container">
+    <div class="feature-cards-grid">
+      <!-- Feature Card 1 -->
+      <div class="feature-card" data-mode="IMAGE DETECTION" id="cardImageDetection">
+        <div class="card-icon">🔍</div>
+        <h3 class="card-title">IMAGE DETECTION</h3>
+        <p class="card-subtitle">VQA + Image Captioning / Grounding</p>
+        <button type="button" class="card-btn">Start Analysis →</button>
+      </div>
+
+      <!-- Feature Card 2 -->
+      <div class="feature-card" data-mode="CHANGE ANALYSIS" id="cardChangeAnalysis">
+        <div class="card-icon">🔄</div>
+        <h3 class="card-title">CHANGE ANALYSIS</h3>
+        <p class="card-subtitle">Two-Image Change Detection + Change VQA</p>
+        <button type="button" class="card-btn">Compare Images →</button>
+      </div>
+
+      <!-- Feature Card 3 -->
+      <div class="feature-card" data-mode="OPTICAL + SAR ANALYSIS" id="cardOpticalSAR">
+        <div class="card-icon">🛰️</div>
+        <h3 class="card-title">OPTICAL + SAR ANALYSIS</h3>
+        <p class="card-subtitle">Joint Multimodal Analysis</p>
+        <button type="button" class="card-btn">Analyze Optical + SAR →</button>
+      </div>
+
+      <!-- Feature Card 4 -->
+      <div class="feature-card active-agent" data-mode="AI AGENT" id="cardAIAgent">
+        <div class="card-icon">🤖</div>
+        <h3 class="card-title">AI AGENT</h3>
+        <p class="card-subtitle">Automatically Chooses the Appropriate Workflow</p>
+        <button type="button" class="card-btn active-agent-btn">Ask SatQuery AI →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Workspace -->
+  <main>
+    <!-- PAGE 1: Upload Imagery & Query Workspace -->
+    <div id="pageInput" class="app-page-view">
+      <section class="glass-panel">
+        <!-- Workflow Mode Selector Bar -->
+        <div class="mode-tabs-bar">
+          <button type="button" class="mode-tab active" data-workflow="AGENT">🤖 AI Agent (Auto)</button>
+          <button type="button" class="mode-tab" data-workflow="SINGLE">🔍 Image Detection</button>
+          <button type="button" class="mode-tab" data-workflow="CHANGE">🔄 Change Analysis</button>
+          <button type="button" class="mode-tab" data-workflow="MULTIMODAL">🛰️ Optical + SAR</button>
+        </div>
+
+        <!-- Non-Intrusive AI Agent Routing Badge Panel -->
+        <div id="agentRoutingPanel" class="agent-panel">
+          <div class="agent-panel-header">
+            <span class="agent-badge">🤖 AI AGENT</span>
+            <span id="agentStatusText" class="agent-status">Ready to route query...</span>
+          </div>
+          <div id="agentReasonBox" class="agent-reason-box">
+            <p><strong>Workflow:</strong> <span id="agentDetectedTask">AI Agent Auto-Routing</span></p>
+            <p id="agentRoutingReasonText" style="font-size: 0.82rem; color: #94a3b8; margin-top: 4px;">Upload images and ask any question — the agent will evaluate sensor modality, count, and query intent to pick the optimal pipeline.</p>
+          </div>
+        </div>
+
+        <!-- Ambiguous Query Resolution Modal -->
+        <div id="ambiguousModal" class="ambiguous-modal hidden">
+          <p style="font-size: 0.9rem; font-weight: 700; color: #facc15; margin-bottom: 8px;">⚠️ Ambiguous Request Detected</p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 12px;">Two satellite images were uploaded, but the analysis intent is ambiguous. How would you like to analyze them?</p>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" id="btnSelectChange" class="btn-quick-demo" style="flex: 1;">🔄 Run Change Analysis</button>
+            <button type="button" id="btnSelectMultimodal" class="btn-quick-demo" style="flex: 1;">🛰️ Run Optical + SAR Analysis</button>
+          </div>
+        </div>
+
+        <!-- Workspace 2-Column Responsive Full-Width Expansion Grid -->
+        <div class="input-workspace-grid">
+          <!-- Left Column: Upload Workspace -->
+          <div class="input-col">
+            <h2 id="workspaceHeading" class="panel-heading" style="margin-bottom: 0.85rem;">Satellite Imagery Upload</h2>
+            <!-- Upload Container: Dynamically rendered based on active mode -->
+            <div id="uploadWorkspace" class="upload-workspace">
+
+              <!-- Single Image Workspace (IMAGE DETECTION) -->
+              <div id="workspaceSingle" class="upload-grid mode-workspace hidden">
+                <div class="dropzone single-dropzone" id="dropzoneSingle">
+                  <div style="font-size: 32px;">📡</div>
+                  <p style="font-size: 1rem; margin-top: 10px;"><strong>Satellite Image (Required)</strong></p>
+                  <p style="font-size: 0.85rem; color: #94a3b8;">Drag & drop or click to browse (JPG, PNG, TIFF, GeoTIFF, max 50MB)</p>
+                  <input type="file" id="fileInputSingle" accept="image/*,.tif,.tiff" class="hidden">
+                </div>
+              </div>
+
+              <!-- Change Analysis Workspace (IMAGE A vs IMAGE B) -->
+              <div id="workspaceChange" class="upload-grid mode-workspace hidden" style="grid-template-columns: 1fr;">
+                <div class="change-helper-banner" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; color: #7dd3fc; font-size: 0.82rem; text-align: left;">
+                  💡 <strong>Bi-Temporal Change Analysis:</strong> Upload two satellite images covering the <strong>same geographic area</strong> captured at <strong>different acquisition dates</strong> (Image A = Before / Earlier, Image B = After / Later).
+                </div>
+                <div class="flood-presets-bar" style="margin-bottom: 12px; padding: 10px 14px; background: rgba(14, 165, 233, 0.08); border: 1px dashed rgba(14, 165, 233, 0.3); border-radius: 8px; text-align: left;">
+                  <div style="font-size: 0.78rem; color: #38bdf8; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <span>🌊 Quick Flood Event Date Presets:</span>
+                    <span style="font-size: 0.72rem; color: #94a3b8; font-weight: 400;">(Click to auto-fill accurate before & after acquisition dates)</span>
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="floodDatePresets">
+                    <button type="button" class="preset-chip date-preset-btn" data-before="2024-09-15" data-after="2024-09-29" data-loc="Nepal">🇳🇵 Nepal Floods (Sep 2024)</button>
+                    <button type="button" class="preset-chip date-preset-btn" data-before="2022-07-01" data-after="2022-08-30" data-loc="Pakistan">🇵🇰 Pakistan Floods (Aug 2022)</button>
+                    <button type="button" class="preset-chip date-preset-btn" data-before="2024-10-15" data-after="2024-11-02" data-loc="Valencia, Spain">🇪🇸 Valencia Floods (Oct 2024)</button>
+                    <button type="button" class="preset-chip date-preset-btn" data-before="2023-09-01" data-after="2023-09-15" data-loc="Libya">🇱🇾 Libya Floods (Sep 2023)</button>
+                    <button type="button" class="preset-chip date-preset-btn" data-before="2018-07-20" data-after="2018-08-22" data-loc="Kerala, India">🇮🇳 Kerala Floods (Aug 2018)</button>
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div class="dropzone-col">
+                    <div class="dropzone" id="dropzoneA">
+                      <div style="font-size: 24px;">📅</div>
+                      <p><strong>IMAGE A — BEFORE / EARLIER (Required)</strong></p>
+                      <p>Earlier Satellite Capture</p>
+                      <input type="file" id="fileInputA" accept="image/*,.tif,.tiff" class="hidden">
+                    </div>
+                    <div class="meta-field-group" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                      <label style="font-size: 0.78rem; color: #94a3b8; font-weight: 600;">Acquisition Date (Before):</label>
+                      <input type="date" id="dateA" class="meta-input" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); color: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.82rem;">
+                      <div style="display: flex; gap: 6px; margin-top: 2px;">
+                        <input type="text" id="locationA" placeholder="Location Name / Coords (e.g. Nepal)" style="width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); color: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.78rem;">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="dropzone-col">
+                    <div class="dropzone" id="dropzoneB">
+                      <div style="font-size: 24px;">📆</div>
+                      <p><strong>IMAGE B — AFTER / LATER (Required)</strong></p>
+                      <p>Later Satellite Capture</p>
+                      <input type="file" id="fileInputB" accept="image/*,.tif,.tiff" class="hidden">
+                    </div>
+                    <div class="meta-field-group" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                      <label style="font-size: 0.78rem; color: #94a3b8; font-weight: 600;">Acquisition Date (After):</label>
+                      <input type="date" id="dateB" class="meta-input" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); color: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.82rem;">
+                      <div style="display: flex; gap: 6px; margin-top: 2px;">
+                        <input type="text" id="locationB" placeholder="Location Name / Coords (e.g. Nepal)" style="width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); color: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.78rem;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Optical + SAR Workspace (OPTICAL IMAGE vs SAR IMAGE) -->
+              <div id="workspaceMultimodal" class="upload-grid mode-workspace hidden">
+                <div class="dropzone" id="dropzoneOptical">
+                  <div style="font-size: 24px;">🌱</div>
+                  <p><strong>OPTICAL IMAGE</strong></p>
+                  <p>Multispectral RGB / Sentinel-2</p>
+                  <input type="file" id="fileInputOptical" accept="image/*,.tif,.tiff" class="hidden">
+                </div>
+                <div class="dropzone" id="dropzoneSAR">
+                  <div style="font-size: 24px;">📡</div>
+                  <p><strong>SAR IMAGE</strong></p>
+                  <p>Sentinel-1 SAR Backscatter (VV/VH)</p>
+                  <input type="file" id="fileInputSAR" accept="image/*,.tif,.tiff" class="hidden">
+                </div>
+              </div>
+
+              <!-- AI Agent Workspace (Default Flexible Upload Grid) -->
+              <div id="workspaceAgent" class="upload-grid mode-workspace">
+                <div class="dropzone" id="dropzone1">
+                  <div style="font-size: 24px;">📡</div>
+                  <p><strong>Satellite Image 1 (Required)</strong></p>
+                  <p>Drag & drop or click to browse</p>
+                  <input type="file" id="fileInput1" accept="image/*,.tif,.tiff" class="hidden">
+                </div>
+
+                <div class="dropzone" id="dropzone2">
+                  <div style="font-size: 24px;">🛰️</div>
+                  <p><strong>Satellite Image 2 (Optional)</strong></p>
+                  <p>Before / After or SAR image</p>
+                  <input type="file" id="fileInput2" accept="image/*,.tif,.tiff" class="hidden">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right Column: Query Container & Actions -->
+          <div class="input-col">
+            <div class="query-container">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="queryInput" class="query-label">Ask SatQuery AI</label>
+                <button type="button" id="clearBtn" class="logout-btn" style="padding: 3px 10px; font-size: 0.75rem;">🗑️ Clear</button>
+              </div>
+              
+              <textarea id="queryInput" placeholder="Ask SatQuery AI anything about your satellite imagery..."></textarea>
+
+              <div class="example-chips-label">Benchmark & Suggested Query Presets:</div>
+              <div class="chips-container">
+                <button class="chip" data-query="Describe this satellite image and classify main land cover features.">🔍 Describe Image</button>
+                <button class="chip" data-query="What building construction or land cover conversion occurred between these dates?">🔄 What Changed?</button>
+                <button class="chip" data-query="Analyze Sentinel-1 SAR and Sentinel-2 optical together for BigEarthNet multi-label land cover (https://txt.bigearth.net/)">🛰️ BigEarthNet-MM (txt.bigearth.net)</button>
+                <button class="chip" data-query="Perform CDVQA bi-temporal change reasoning and category classification (https://github.com/YZHJessica/CDVQA)">🔄 CDVQA Change Reasoning (github.com/YZHJessica/CDVQA)</button>
+                <button class="chip" data-query="Evaluate Zenodo RS VQA question answering and object density estimation (https://doi.org/10.5281/zenodo.6344366)">📊 Zenodo RS VQA (doi.org/10.5281/zenodo.6344366)</button>
+                <button class="chip" data-query="How many residential buildings or surface structures are present in this image?">🔢 Zenodo RS Object Count</button>
+                <button class="chip" data-query="What building construction or demolition occurred between T1 and T2?">🏗️ CDVQA Urban Change</button>
+                <button class="chip" data-query="Extract BigEarthNet CORINE 19-class multi-label land cover tags and radar roughness">🏷️ CORINE 19-Class Labels</button>
+              </div>
+
+              <div id="errorBox" class="hidden" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-top: 10px;"></div>
+
+              <div style="display: flex; gap: 10px; margin-top: 6px;">
+                <button id="analyzeBtn" class="btn-primary" style="flex: 1;">
+                  <div id="btnSpinner" class="spinner hidden"></div>
+                  <span id="btnText">🚀 Analyze with SatQuery AI →</span>
+                </button>
+                <button type="button" id="cancelBtn" class="logout-btn hidden" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">⏹️ Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PAGE 2: Dedicated Analysis Results Page -->
+    <div id="pageResults" class="app-page-view hidden">
+      <section class="glass-panel" id="resultsSection">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <button type="button" id="btnBackToInputTop" class="logout-btn" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600;">← Back to Query & Upload Workspace</button>
+          <h2 class="panel-heading" style="margin-bottom: 0;">Analysis Results Page</h2>
+          <button type="button" id="btnScrollToTop" class="logout-btn" style="font-size: 0.75rem; padding: 4px 10px;">⬆️ Back to Upload</button>
+        </div>
+
+      <div id="resultsContainer" class="hidden">
+
+        <!-- Status Header Card -->
+        <div class="result-card">
+          <div class="result-header">
+            <span id="taskBadge" class="status-badge">Satellite Analysis Complete</span>
+            <span id="confidenceBadge" class="confidence-pill">Confidence: High</span>
+          </div>
+          <!-- Warnings Container -->
+          <div id="warningBanner" class="warning-banner hidden" style="margin-top: 10px; background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 8px; padding: 10px 14px; color: #fde047; font-size: 0.82rem; text-align: left;"></div>
+          <h3 id="answerHeadline" class="ai-answer-headline"></h3>
+          <p id="answerText" class="ai-answer-body"></p>
+          <p id="summaryText" class="summary-text"></p>
+          <div id="datasetBadgeContainer" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+        </div>
+
+        <!-- Interactive Visual Controls Toolbar -->
+        <div id="visualControlsCard" class="result-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 class="accordion-title" style="margin: 0;">Interactive Visualization Controls</h4>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" id="btnZoomIn" class="btn-quick-demo" title="Zoom In">🔍 +</button>
+              <button type="button" id="btnZoomOut" class="btn-quick-demo" title="Zoom Out">🔍 -</button>
+              <button type="button" id="btnResetView" class="btn-quick-demo" title="Reset View">🔄 Reset</button>
+              <button type="button" id="btnFullscreen" class="btn-quick-demo" title="Fullscreen">⛶ Fullscreen</button>
+            </div>
+          </div>
+
+          <!-- Before / After Date Pills -->
+          <div id="curtainDatePills" class="curtain-date-pills hidden" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span id="datePillBefore" class="status-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); font-weight: 700;">📅 BEFORE: Earlier Capture</span>
+            <span id="datePillAfter" class="status-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); font-weight: 700;">📆 AFTER: Later Capture</span>
+          </div>
+
+          <!-- Before / After Curtain Slider Container (For Change Analysis) -->
+          <div id="curtainSliderContainer" class="curtain-slider-box hidden">
+            <div class="curtain-image curtain-after" id="curtainAfter">
+              <img id="imgCurtainAfter" src="" alt="After / Image B">
+              <span class="curtain-label label-after">After (Image B)</span>
+            </div>
+            <div class="curtain-image curtain-before" id="curtainBefore">
+              <img id="imgCurtainBefore" src="" alt="Before / Image A">
+              <span class="curtain-label label-before">Before (Image A)</span>
+            </div>
+            <input type="range" id="curtainRange" min="0" max="100" value="50" class="curtain-range-input">
+          </div>
+
+          <!-- Opacity Slider Control (For Difference / Grounding Overlay) -->
+          <div id="opacityControlRow" class="metric-row hidden" style="margin-top: 12px;">
+            <div class="metric-label-row">
+              <span>Highlight Mask Opacity</span>
+              <span id="opacityValText">80%</span>
+            </div>
+            <input type="range" id="opacityRange" min="0" max="100" value="80" style="width: 100%; accent-color: var(--accent-primary);">
+          </div>
+        </div>
+
+        <!-- Graphical View & Environmental Risk Gauges -->
+        <div id="graphicalMetricsCard" class="result-card">
+          <h4 class="accordion-title" style="margin-top: 0;">Graphical Analytics & Risk Breakdown</h4>
+          <div id="graphicalMetricsPanel" style="display: flex; flex-direction: column; gap: 14px; margin-top: 12px;"></div>
+        </div>
+
+        <!-- Evidence section -->
+        <div id="evidenceContainer"></div>
+
+        <!-- Execution Trace -->
+        <div class="result-card" style="margin-top: 1rem;">
+          <h4 class="accordion-title">Agentic Execution Summary</h4>
+          <ul id="stepsList" class="steps-list"></ul>
+        </div>
+
+        <!-- Export & Action Buttons -->
+        <div style="display: flex; gap: 10px; margin-top: 1.25rem;">
+          <button type="button" id="btnNewAnalysis" class="btn-primary" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #fff;">➕ New Analysis</button>
+          <button type="button" id="btnCopyAnswer" class="btn-primary" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #fff;">📋 Copy Answer</button>
+          <button type="button" id="btnExportResult" class="btn-primary" style="flex: 1;">💾 Export Result (JSON)</button>
+        </div>
+
+      </div>
+      <!-- Empty State -->
+      <div id="emptyState" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+        <div style="font-size: 48px; margin-bottom: 1rem;">🛰️</div>
+        <p style="font-size: 1.05rem; font-weight: 600;">No analysis performed yet</p>
+        <p style="font-size: 0.88rem; margin-top: 6px;">Select a feature card or upload imagery to analyze remote sensing intelligence across Image Detection, Change Analysis, and Optical + SAR Analysis.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+  <!-- Floating Circular Chatbot Button (Bottom-Right Viewport) -->
+  <button type="button" id="floatingChatbotToggle" class="floating-chatbot-toggle" title="Open SatQuery AI Domain Specialist Chatbot">
+    <img src="/assets/chatbot-avatar.png" alt="SatQuery AI Bot" class="floating-chatbot-img">
+    <span class="domain-guard-badge-dot" title="Domain Guard Active"></span>
+  </button>
+
+  <!-- Floating Chatbot Widget Expanded Panel (Bottom-Right Viewport) -->
+  <div id="chatbotWidgetPanel" class="chatbot-widget-panel hidden">
+    <div class="chatbot-header">
+      <div class="chatbot-header-title">
+        <img src="/assets/chatbot-avatar.png" alt="SatQuery AI Bot" class="chatbot-avatar-icon">
+        <span>SatQuery AI Domain Assistant</span>
+        <span style="font-size: 0.72rem; color: #4ade80; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.35); padding: 3px 8px; border-radius: 10px; font-weight: 600;">🟢 Active</span>
+      </div>
+      <button type="button" id="closeChatbotWidgetBtn" class="chatbot-close-btn" title="Minimize Chat Assistant">✕</button>
+    </div>
+    
+    <div id="chatbotWidgetMessages" class="chatbot-messages">
+      <div class="chat-bubble chat-bubble-bot">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-weight: 700; color: #38bdf8; font-size: 0.82rem;">
+          <img src="/assets/chatbot-avatar.png" alt="Bot Avatar" style="width: 18px; height: 18px; border-radius: 50%; object-fit: cover;">
+          <span>Welcome to SatQuery AI!</span>
+        </div>
+        I am your specialized Satellite & Remote Sensing domain assistant. Ask me questions about Sentinel-1/2, SAR backscatter, optical reflectance, spectral indices (NDVI, NDWI, NDBI, BSI), resolution trade-offs, or change detection concepts!
+      </div>
+    </div>
+
+    <!-- Quick Question Chips -->
+    <div class="chatbot-quick-chips">
+      <span class="chatbot-chip" data-chat="What does SAR stand for and how is it complementary to optical satellite imagery?">📡 SAR vs Optical</span>
+      <span class="chatbot-chip" data-chat="Explain NDVI, NDWI, and MNDWI spectral indices">🌱 NDVI / NDWI</span>
+      <span class="chatbot-chip" data-chat="What are the resolution trade-offs between spatial and temporal resolution?">🛰️ Resolution Trade-offs</span>
+      <span class="chatbot-chip" data-chat="What is the weather today?">🌤️ Weather (Redirect Test)</span>
+      <span class="chatbot-chip" data-chat="Write a Python script to sort a list using quicksort">💻 Quicksort (Redirect Test)</span>
+    </div>
+
+    <form id="chatbotWidgetForm" class="chatbot-footer">
+      <input type="text" id="chatbotWidgetInput" class="chatbot-input" placeholder="Ask SatQuery AI a remote sensing question..." required autocomplete="off">
+      <button type="submit" id="chatbotWidgetSendBtn" class="chatbot-send-btn">Send ➔</button>
+    </form>
+  </div>
+
+  <script src="/js/space_hero.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/upload.js"></script>
+  <script src="/js/results.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
