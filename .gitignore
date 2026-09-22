@@ -19,6 +19,11 @@ outputs/masks/*
 outputs/overlays/*
 !outputs/overlays/.gitkeep
 
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
 # IDE & System
 .vscode/
 .idea/

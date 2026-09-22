@@ -143,12 +143,8 @@ class SpaceHeroEngine {
 
     ctx.clearRect(0, 0, this.width, this.height);
 
-    // Deep Space Radial Background
-    const bgGradient = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.max(this.width, this.height) * 0.85);
-    bgGradient.addColorStop(0, 'rgba(11, 24, 48, 0.95)');
-    bgGradient.addColorStop(0.5, 'rgba(6, 12, 26, 0.98)');
-    bgGradient.addColorStop(1, 'rgba(2, 4, 10, 1)');
-    ctx.fillStyle = bgGradient;
+    // Deep Space Solid Background (Zero Gradients)
+    ctx.fillStyle = '#060911';
     ctx.fillRect(0, 0, this.width, this.height);
 
     // Cosmic Particles with warp streaking
@@ -158,31 +154,24 @@ class SpaceHeroEngine {
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius * (1 + this.warpProgress), 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0, 242, 254, ${p.alpha * (1 - this.warpProgress * 0.5)})`;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#00f2fe';
+      ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha * (1 - this.warpProgress * 0.5)})`;
       ctx.fill();
     });
-    ctx.shadowBlur = 0;
 
     const baseGlobeRadius = Math.min(this.width, this.height) * 0.26;
     const currentGlobeRadius = baseGlobeRadius * this.zoomFactor;
 
-    // Outer Atmosphere Glow
-    const atmosphereGlow = ctx.createRadialGradient(cx, cy, currentGlobeRadius * 0.8, cx, cy, currentGlobeRadius * 1.4);
-    atmosphereGlow.addColorStop(0, 'rgba(0, 242, 254, 0.35)');
-    atmosphereGlow.addColorStop(0.5, 'rgba(79, 172, 254, 0.15)');
-    atmosphereGlow.addColorStop(1, 'rgba(0, 242, 254, 0)');
-
+    // Outer Atmosphere Solid Outline (Zero Gradients)
     ctx.beginPath();
-    ctx.arc(cx, cy, currentGlobeRadius * 1.4, 0, Math.PI * 2);
-    ctx.fillStyle = atmosphereGlow;
-    ctx.fill();
+    ctx.arc(cx, cy, currentGlobeRadius * 1.3, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
     // Globe Latitude & Longitude Dotted Grid
     ctx.save();
     ctx.setLineDash([4, 6]); // Dotted grid lines
-    ctx.strokeStyle = 'rgba(0, 242, 254, 0.22)';
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.22)';
     ctx.lineWidth = 1.2;
 
     for (let i = -3; i <= 3; i++) {
@@ -203,7 +192,7 @@ class SpaceHeroEngine {
     const scanRadius = (this.radarPulse / 360) * (currentGlobeRadius * 1.5);
     ctx.beginPath();
     ctx.arc(cx, cy, scanRadius, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(0, 242, 254, ${Math.max(0, 1 - scanRadius / (currentGlobeRadius * 1.5))})`;
+    ctx.strokeStyle = `rgba(56, 189, 248, ${Math.max(0, 1 - scanRadius / (currentGlobeRadius * 1.5))})`;
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
@@ -224,7 +213,7 @@ class SpaceHeroEngine {
       ctx.beginPath();
       ctx.setLineDash([4, 10]); // Distinct dotted orbit
       ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(0, 242, 254, ${0.28 + Math.sin(this.time * 2) * 0.1})`;
+      ctx.strokeStyle = `rgba(56, 189, 248, ${0.28 + Math.sin(this.time * 2) * 0.1})`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -236,7 +225,7 @@ class SpaceHeroEngine {
 
         ctx.beginPath();
         ctx.arc(nx, ny, 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 242, 254, ${0.4 + Math.sin(this.time * 3 + node.pulseOffset) * 0.3})`;
+        ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + Math.sin(this.time * 3 + node.pulseOffset) * 0.3})`;
         ctx.fill();
       });
 
@@ -244,13 +233,10 @@ class SpaceHeroEngine {
       const sx = Math.cos(s.angle) * rx;
       const sy = Math.sin(s.angle) * ry;
 
-      // Satellite Trail / Glow Effect
-      const trailGradient = ctx.createRadialGradient(sx, sy, 1, sx, sy, 16);
-      trailGradient.addColorStop(0, s.color);
-      trailGradient.addColorStop(1, 'rgba(0, 242, 254, 0)');
+      // Satellite Solid Marker Ring (Zero Gradients)
       ctx.beginPath();
-      ctx.arc(sx, sy, 16, 0, Math.PI * 2);
-      ctx.fillStyle = trailGradient;
+      ctx.arc(sx, sy, 10, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(2, 132, 199, 0.25)';
       ctx.fill();
 
       // Satellite Core Point
